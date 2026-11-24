@@ -1,0 +1,18 @@
+name: decode-icons
+on:
+  push:
+    paths: ['guitar/icons/*.b64']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          for f in guitar/icons/*.b64; do base64 -d "$f" > "${f%.b64}"; done
+          git config user.name "icons-bot"; git config user.email "icons-bot@users.noreply.github.com"
+          git add guitar/icons/*.png
+          git diff --cached --quiet || git commit -m "Иконки PNG из base64"
+          git push
